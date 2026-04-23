@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VMC Booth Search Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body { font-family: Arial; margin:0; background:#eef2f7; }
+.header { background:#1e3a8a; color:white; padding:15px; text-align:center; }
+.container { max-width:1100px; margin:20px auto; background:white; padding:20px; }
+
+input { width:100%; padding:10px; margin-bottom:10px; }
+
+table { width:100%; border-collapse: collapse; margin-top:20px; }
+th, td { border:1px solid #ccc; padding:8px; }
+th { background:#1e3a8a; color:white; }
+
+button { padding:10px; background:#1e3a8a; color:white; border:none; margin-top:10px; width:100%; }
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  VMC Election Booth Search 2026
+</div>
+
+<div class="container">
+
+<input type="text" id="searchInput" placeholder="Search booth / name / area">
+
+<button onclick="downloadExcel()">Download Excel</button>
+
+<table>
+<thead>
+<tr>
+<th>Booth</th><th>Ward</th><th>Area</th><th>Name</th><th>Map</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+
+</div>
+
+<script>
+let booths = [];
+
+fetch('data/booths.json')
+.then(res => res.json())
+.then(data => {
+  booths = data;
+  renderTable(booths);
+});
+
+document.getElementById("searchInput").addEventListener("input", function(){
+  let val = this.value.toLowerCase();
+  let filtered = booths.filter(b =>
+    b.booth.includes(val) ||
+    b.name.toLowerCase().includes(val) ||
+    b.area.toLowerCase().includes(val)
+  );
+  renderTable(filtered);
+});
+
+function renderTable(data){
+  let tbody = document.getElementById("tableBody");
+  tbody.innerHTML = "";
+
+  data.forEach(b => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${b.booth}</td>
+        <td>${b.ward}</td>
+        <td>${b.area}</td>
+        <td>${b.name}</td>
+        <td>
+          <a href="https://www.google.com/maps?q=${b.lat},${b.lng}" target="_blank">
+            View
+          </a>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function downloadExcel(){
+  let csv = "Booth,Ward,Area,Name\n";
+  booths.forEach(b => {
+    csv += `${b.booth},${b.ward},${b.area},${b.name}\n`;
+  });
+
+  let blob = new Blob([csv], {type:"text/csv"});
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "booths.csv";
+  a.click();
+}
+</script>
+
+</body>
+</html>
