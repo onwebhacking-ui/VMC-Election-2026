@@ -1,25 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>JSON Example</title>
+  <title>Polling Data</title>
 </head>
 <body>
 
-<h1>User List</h1>
+<h2>Polling Station Data</h2>
 <div id="output"></div>
 
 <script>
-fetch('data.json')
-  .then(response => response.json())
-  .then(data => {
-    let output = '';
-    data.forEach(user => {
-      output += `<p>${user.name} - ${user.age}</p>`;
-    });
-    document.getElementById('output').innerHTML = output;
+console.log("Started");
+
+// IMPORTANT: match your file name EXACTLY
+fetch('Polling Station.json')
+  .then(res => {
+    if (!res.ok) {
+      throw new Error("File not found: " + res.status);
+    }
+    return res.json();
   })
-  .catch(error => console.error('Error:', error));
+  .then(data => {
+    console.log("DATA:", data);
+
+    let output = "";
+
+    // LOOP THROUGH YOUR REAL STRUCTURE
+    data.pages.forEach((page, pageIndex) => {
+
+      output += `<h3>Page ${pageIndex + 1}</h3>`;
+
+      page.content.forEach(item => {
+        if (item.text && item.text.trim() !== "") {
+          output += `<p>${item.text}</p>`;
+        }
+      });
+
+    });
+
+    document.getElementById("output").innerHTML = output;
+  })
+  .catch(err => {
+    console.error(err);
+    document.getElementById("output").innerHTML =
+      "<p style='color:red;'>Error loading JSON</p>";
+  });
 </script>
-<script src="script.js"></script>
+
 </body>
 </html>
