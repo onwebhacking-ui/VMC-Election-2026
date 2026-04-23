@@ -1,49 +1,112 @@
 <!DOCTYPE html>
-<html>
+<html lang="gu">
 <head>
-  <title>Polling Data</title>
+  <meta charset="UTF-8">
+  <title>મતદાન મથક માહિતી</title>
+
+  <style>
+    body {
+      font-family: "Noto Sans Gujarati", Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    #search {
+      width: 100%;
+      padding: 10px;
+      margin: 20px 0;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .page-title {
+      font-weight: bold;
+      color: #007bff;
+      margin-bottom: 10px;
+    }
+
+    .text-line {
+      font-size: 15px;
+      margin: 2px 0;
+    }
+  </style>
 </head>
+
 <body>
 
-<h2>Polling Station Data</h2>
-<div id="output"></div>
+<h1>મતદાન મથક વિગતો</h1>
+
+<input type="text" id="search" placeholder="શોધો (Search here...)">
+
+<div id="output">લોડ થઈ રહ્યું છે...</div>
 
 <script>
-console.log("Started");
+let allData = [];
 
-// IMPORTANT: match your file name EXACTLY
-fetch('polling.json')
-  .then(res => {
-    if (!res.ok) {
-      throw new Error("File not found: " + res.status);
-    }
-    return res.json();
-  })
+fetch('polling.json') // your JSON file
+  .then(res => res.json())
   .then(data => {
-    console.log("DATA:", data);
 
-    let output = "";
+    allData = data.pages;
 
-    // LOOP THROUGH YOUR REAL STRUCTURE
-    data.pages.forEach((page, pageIndex) => {
-
-      output += `<h3>Page ${pageIndex + 1}</h3>`;
-
-      page.content.forEach(item => {
-        if (item.text && item.text.trim() !== "") {
-          output += `<p>${item.text}</p>`;
-        }
-      });
-
-    });
-
-    document.getElementById("output").innerHTML = output;
+    displayData(allData);
   })
   .catch(err => {
-    console.error(err);
     document.getElementById("output").innerHTML =
-      "<p style='color:red;'>Error loading JSON</p>";
+      "<p style='color:red;'>ડેટા લોડ કરવામાં ભૂલ</p>";
   });
+
+function displayData(pages) {
+
+  let html = "";
+
+  pages.forEach((page, index) => {
+
+    html += `<div class="card">`;
+    html += `<div class="page-title">પેજ ${index + 1}</div>`;
+
+    page.content.forEach(item => {
+      if (item.text && item.text.trim() !== "") {
+        html += `<div class="text-line">${item.text}</div>`;
+      }
+    });
+
+    html += `</div>`;
+  });
+
+  document.getElementById("output").innerHTML = html;
+}
+
+// 🔍 Search functionality
+document.getElementById("search").addEventListener("input", function () {
+  let value = this.value.toLowerCase();
+
+  let filtered = allData.map(page => {
+    return {
+      ...page,
+      content: page.content.filter(item =>
+        item.text && item.text.toLowerCase().includes(value)
+      )
+    };
+  });
+
+  displayData(filtered);
+});
 </script>
 
 </body>
