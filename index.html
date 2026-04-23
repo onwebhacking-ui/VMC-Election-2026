@@ -1,111 +1,150 @@
 <!DOCTYPE html>
 <html lang="gu">
 <head>
-  <meta charset="UTF-8">
-  <title>મતદાન મથક માહિતી</title>
+<meta charset="UTF-8">
+<title>મતદાન મથક ડેશબોર્ડ</title>
 
-  <style>
-    body {
-      font-family: "Noto Sans Gujarati", Arial, sans-serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 20px;
-    }
+<style>
+body {
+  font-family: "Noto Sans Gujarati", Arial;
+  margin: 0;
+  background: #f4f6f9;
+}
 
-    h1 {
-      text-align: center;
-      color: #333;
-    }
+header {
+  background: #007bff;
+  color: white;
+  padding: 15px;
+  text-align: center;
+  font-size: 22px;
+}
 
-    #search {
-      width: 100%;
-      padding: 10px;
-      margin: 20px 0;
-      font-size: 16px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
+.container {
+  padding: 20px;
+}
 
-    .card {
-      background: white;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
+#search {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
 
-    .page-title {
-      font-weight: bold;
-      color: #007bff;
-      margin-bottom: 10px;
-    }
+.stats {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
 
-    .text-line {
-      font-size: 15px;
-      margin: 2px 0;
-    }
-  </style>
+.stat-box {
+  flex: 1;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.page-title {
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+.text-line {
+  font-size: 14px;
+  margin: 2px 0;
+}
+</style>
 </head>
 
 <body>
 
-<h1>મતદાન મથક વિગતો</h1>
+<header>મતદાન મથક માહિતી ડેશબોર્ડ</header>
 
-<input type="text" id="search" placeholder="શોધો (Search here...)">
+<div class="container">
+
+<input type="text" id="search" placeholder="🔍 શોધો...">
+
+<div class="stats">
+  <div class="stat-box">
+    <div>કુલ પેજ</div>
+    <div id="totalPages">0</div>
+  </div>
+  <div class="stat-box">
+    <div>કુલ એન્ટ્રી</div>
+    <div id="totalEntries">0</div>
+  </div>
+</div>
 
 <div id="output">લોડ થઈ રહ્યું છે...</div>
 
-<script>
-let allData = [];
+</div>
 
-fetch('polling.json') // your JSON file
+<script>
+let originalData = [];
+
+fetch('polling.json')
   .then(res => res.json())
   .then(data => {
+    originalData = data.pages;
 
-    allData = data.pages;
+    document.getElementById("totalPages").innerText = originalData.length;
 
-    displayData(allData);
+    let totalEntries = 0;
+    originalData.forEach(p => totalEntries += p.content.length);
+    document.getElementById("totalEntries").innerText = totalEntries;
+
+    render(originalData);
   })
-  .catch(err => {
+  .catch(() => {
     document.getElementById("output").innerHTML =
-      "<p style='color:red;'>ડેટા લોડ કરવામાં ભૂલ</p>";
+      "<p style='color:red;'>ડેટા લોડ થયો નથી</p>";
   });
 
-function displayData(pages) {
-
+function render(pages) {
   let html = "";
 
   pages.forEach((page, index) => {
 
     html += `<div class="card">`;
-    html += `<div class="page-title">પેજ ${index + 1}</div>`;
+    html += `<div class="page-title">📄 પેજ ${index + 1}</div>`;
+
+    let combined = "";
 
     page.content.forEach(item => {
-      if (item.text && item.text.trim() !== "") {
-        html += `<div class="text-line">${item.text}</div>`;
+      if (item.text) {
+        combined += item.text + " ";
       }
     });
 
+    html += `<div class="text-line">${combined}</div>`;
     html += `</div>`;
   });
 
   document.getElementById("output").innerHTML = html;
 }
 
-// 🔍 Search functionality
+// 🔍 Search
 document.getElementById("search").addEventListener("input", function () {
+
   let value = this.value.toLowerCase();
 
-  let filtered = allData.map(page => {
-    return {
-      ...page,
-      content: page.content.filter(item =>
-        item.text && item.text.toLowerCase().includes(value)
-      )
-    };
+  let filtered = originalData.filter(page => {
+    return page.content.some(item =>
+      item.text && item.text.toLowerCase().includes(value)
+    );
   });
 
-  displayData(filtered);
+  render(filtered);
 });
 </script>
 
