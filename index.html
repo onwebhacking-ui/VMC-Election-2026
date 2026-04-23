@@ -1,19 +1,313 @@
-<section style="background:white;margin:20px;padding:15px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<h3 style="margin-bottom:10px;">📄 અધિકૃત મતદાન મથક PDF</h3>
+<title>VMC ચૂંટણી ૨૦૨૬ - વોર્ડ ૧૦ PRO Dashboard</title>
 
-<iframe 
-    src="polling.pdf" 
-    width="100%" 
-    height="600px"
-    style="border:none;border-radius:8px;">
-</iframe>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-<div style="text-align:center;margin-top:10px;">
-    <a href="polling.pdf" target="_blank"
-       style="background:#ff9933;padding:10px 20px;border-radius:5px;text-decoration:none;color:black;">
-       🔍 Full Screen માં ખોલો
-    </a>
+<style>
+:root{
+--blue:#003366;
+--orange:#ff9933;
+--bg:#f4f7f9;
+}
+
+body{margin:0;font-family:Segoe UI;background:var(--bg);}
+
+/* HEADER */
+header{
+background:var(--blue);
+color:#fff;
+text-align:center;
+padding:20px;
+border-bottom:5px solid var(--orange);
+}
+
+/* STATS */
+.stats{
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+margin:15px;
+}
+
+.card{
+flex:1;
+background:#fff;
+padding:15px;
+border-radius:10px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+/* PRO LAYOUT */
+.container{padding:15px;}
+
+.pro-layout{
+display:flex;
+gap:15px;
+height:80vh;
+}
+
+.left-panel{
+flex:1;
+overflow:auto;
+}
+
+.right-panel{
+width:40%;
+background:white;
+padding:10px;
+border-radius:10px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+display:flex;
+flex-direction:column;
+}
+
+.right-panel iframe{
+flex:1;
+border:none;
+border-radius:8px;
+}
+
+/* ACTION BAR */
+.bar{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+background:#fff;
+padding:15px;
+border-radius:10px;
+}
+
+input{
+flex:1;
+padding:12px;
+border-radius:25px;
+border:2px solid #ddd;
+}
+
+button{
+border:none;
+padding:10px 15px;
+border-radius:25px;
+cursor:pointer;
+}
+
+.btn{background:#27ae60;color:#fff;}
+.print{background:#2980b9;color:#fff;}
+.view{background:#ff9933;color:black;}
+
+/* TABLE */
+.table-box{margin-top:10px;background:#fff;border-radius:10px;overflow:auto;}
+
+table{width:100%;border-collapse:collapse;}
+th{background:var(--blue);color:#fff;padding:10px;}
+td{padding:10px;border-bottom:1px solid #eee;word-break:break-word;}
+
+.booth{background:#eef2f7;padding:4px 8px;border-radius:5px;font-weight:bold;}
+
+.map-frame{
+width:100%;
+height:200px;
+border:none;
+margin-top:5px;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+.pro-layout{flex-direction:column;height:auto;}
+.right-panel{width:100%;height:400px;}
+
+table,thead,tbody,tr,td{display:block}
+th{display:none}
+tr{margin-bottom:10px;border:1px solid #ddd}
+td{padding-left:50%;position:relative}
+td::before{
+content:attr(data-label);
+position:absolute;
+left:10px;
+font-weight:bold;
+color:var(--blue);
+}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>VMC ચૂંટણી ૨૦૨૬</h2>
+<p>વોર્ડ ૧૦ PRO Dashboard</p>
+</header>
+
+<!-- STATS -->
+<div class="stats">
+<div class="card">
+<h3 id="total">0</h3>
+<p>Total Booths</p>
 </div>
 
-</section>
+<div class="card">
+<h3 id="filtered">0</h3>
+<p>Filtered</p>
+</div>
+</div>
+
+<div class="container">
+
+<div class="pro-layout">
+
+<!-- LEFT PANEL -->
+<div class="left-panel">
+
+<div class="bar">
+<input id="search" placeholder="Search (ભાયલી / bhayli / booth no)" onkeyup="search()">
+<button class="btn" onclick="downloadExcel()">Excel</button>
+<button class="print" onclick="window.print()">Print</button>
+</div>
+
+<div class="table-box">
+<table>
+<thead>
+<tr>
+<th>Booth</th>
+<th>Details</th>
+<th>Area</th>
+<th>Map</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="data"></tbody>
+</table>
+</div>
+
+</div>
+
+<!-- RIGHT PANEL (PDF) -->
+<div class="right-panel">
+
+<h3 style="margin:5px;">📄 અધિકૃત PDF</h3>
+
+<iframe src="polling.pdf" id="pdfViewer"></iframe>
+
+<div style="text-align:center;margin-top:10px;">
+<a href="polling.pdf" target="_blank"
+style="background:#ff9933;padding:8px 15px;border-radius:5px;text-decoration:none;color:black;">
+🔍 Full Screen
+</a>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* TEMP DATA (replace with full 1–79 later) */
+let boothData = [];
+
+for(let i=1;i<=79;i++){
+boothData.push({
+id:i,
+name:"બૂથ નામ "+i,
+loc:"સ્થળ "+i,
+area:"વિસ્તાર વિગતો "+i
+});
+}
+
+document.getElementById("total").innerText = boothData.length;
+
+/* RENDER */
+function render(data){
+document.getElementById("filtered").innerText = data.length;
+
+let html = data.map(b=>`
+<tr>
+<td data-label="Booth"><span class="booth">${b.id}</span></td>
+
+<td data-label="Details">
+<b>${b.name}</b><br>
+<small>${b.loc}</small>
+</td>
+
+<td data-label="Area">${b.area}</td>
+
+<td data-label="Map">
+<iframe class="map-frame"
+src="https://maps.google.com/maps?q=${encodeURIComponent(b.name+' '+b.loc)}&output=embed">
+</iframe>
+</td>
+
+<td data-label="Action">
+<button onclick="share(${b.id})">WA</button>
+<button onclick="printBooth(${b.id})">Print</button>
+<button class="view" onclick="highlightBooth(${b.id})">View</button>
+</td>
+</tr>
+`).join("");
+
+document.getElementById("data").innerHTML = html;
+}
+
+render(boothData);
+
+/* SEARCH */
+function search(){
+let q = document.getElementById("search").value.toLowerCase();
+
+let res = boothData.filter(b =>
+b.name.toLowerCase().includes(q) ||
+b.area.toLowerCase().includes(q) ||
+b.loc.toLowerCase().includes(q) ||
+b.id.toString()==q
+);
+
+render(res);
+}
+
+/* EXCEL */
+function downloadExcel(){
+let ws = XLSX.utils.json_to_sheet(boothData);
+let wb = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb, ws, "Booths");
+XLSX.writeFile(wb,"Ward10.xlsx");
+}
+
+/* WHATSAPP */
+function share(id){
+let b = boothData.find(x=>x.id==id);
+
+let msg = `બૂથ ${b.id}
+${b.name}
+${b.loc}
+${b.area}`;
+
+window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+}
+
+/* PRINT */
+function printBooth(id){
+let b = boothData.find(x=>x.id==id);
+
+let w = window.open();
+w.document.write(`<h2>બૂથ ${b.id}</h2><p>${b.name}</p><p>${b.loc}</p><p>${b.area}</p>`);
+w.print();
+}
+
+/* PDF PAGE JUMP */
+function highlightBooth(id){
+let pdf = document.getElementById("pdfViewer");
+pdf.src = "polling.pdf#page=" + Math.ceil(id/10);
+}
+
+</script>
+
+</body>
+</html>
