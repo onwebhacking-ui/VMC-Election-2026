@@ -12,7 +12,7 @@
 console.log("Started");
 
 // IMPORTANT: match your file name EXACTLY
-fetch('Polling Station.json')
+fetch('polling.json')
   .then(res => {
     if (!res.ok) {
       throw new Error("File not found: " + res.status);
