@@ -3,155 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ચૂંટણી મતદાન મથક શોધ - વોર્ડ ૧૦ વડોદરા</title>
+    <title>VMC ચૂંટણી ૨૦૨૬ - મતદાન મથક વિગતો (વોર્ડ ૧૦)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
             --gov-blue: #003366;
             --gov-orange: #ff9933;
-            --light-bg: #f4f7f6;
+            --light-bg: #f4f7f9;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             background-color: var(--light-bg);
             margin: 0;
             padding: 0;
-            color: #333;
         }
 
-        /* Header Style */
         header {
             background: var(--gov-blue);
             color: white;
-            padding: 20px;
+            padding: 25px 15px;
             text-align: center;
             border-bottom: 5px solid var(--gov-orange);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        header h1 { margin: 0; font-size: 24px; }
-        header p { margin: 5px 0 0; opacity: 0.8; }
-
         .container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 20px auto;
             padding: 0 15px;
         }
 
-        /* Search Box */
-        .search-section {
+        /* Search & Action Bar */
+        .action-bar {
             background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
-        }
-
-        .search-box {
-            position: relative;
-            display: flex;
-            gap: 10px;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #ddd;
-            border-radius: 30px;
-            font-size: 18px;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        input[type="text"]:focus {
-            border-color: var(--gov-blue);
-        }
-
-        /* Booth Card Style */
-        .booth-card {
-            background: white;
-            border-radius: 10px;
             padding: 20px;
-            margin-bottom: 15px;
-            border-left: 6px solid var(--gov-blue);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-            display: none; /* Initially hidden */
-        }
-
-        .booth-card.visible {
-            display: block;
-            animation: fadeIn 0.5s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .booth-header {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             display: flex;
-            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
             align-items: center;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
         }
+
+        #searchInput {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        #searchInput:focus { border-color: var(--gov-blue); }
+
+        .btn-download {
+            background: #27ae60;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Table Style */
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: var(--gov-blue);
+            color: white;
+            padding: 15px;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        tr:hover { background: #f9f9f9; }
 
         .booth-no {
-            background: var(--gov-orange);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
             font-weight: bold;
-        }
-
-        .booth-name {
-            font-size: 19px;
             color: var(--gov-blue);
-            font-weight: bold;
-        }
-
-        .info-row {
-            margin: 8px 0;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-        }
-
-        .info-row i {
-            color: var(--gov-orange);
-            margin-top: 4px;
-            width: 20px;
-        }
-
-        .map-btn {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 8px 15px;
-            background: #e7f3ff;
-            color: var(--gov-blue);
-            text-decoration: none;
+            background: #eef2f7;
+            padding: 5px 10px;
             border-radius: 5px;
-            font-size: 14px;
+        }
+
+        .map-link {
+            color: #d35400;
+            text-decoration: none;
             font-weight: bold;
         }
 
-        .map-btn:hover { background: #d0e7ff; }
-
-        .stats {
-            text-align: center;
-            margin-bottom: 15px;
-            font-weight: bold;
-            color: #666;
-        }
-
-        footer {
-            text-align: center;
-            padding: 30px;
-            color: #666;
-            font-size: 14px;
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr { display: block; }
+            th { display: none; }
+            tr { margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; }
+            td { text-align: right; padding-left: 50%; position: relative; }
+            td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 15px;
+                font-weight: bold;
+                text-align: left;
+                color: var(--gov-blue);
+            }
         }
     </style>
 </head>
@@ -159,155 +135,75 @@
 
 <header>
     <h1>વડોદરા મહાનગરપાલિકા ચૂંટણી ૨૦૨૬</h1>
-    <p>વોર્ડ નંબર ૧૦ - મતદાન મથક વિગતો</p>
+    <p>વોર્ડ નંબર ૧૦ - મતદાન મથકોની અધિકૃત યાદી</p>
 </header>
 
 <div class="container">
-    <div class="search-section">
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="તમારો વિસ્તાર અથવા બૂથ નંબર શોધો... (દા.ત. ભાયલી, ગોત્રી, ૪૨)">
-        </div>
+    <div class="action-bar">
+        <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="બૂથ નંબર, શાળાનું નામ કે સોસાયટી શોધો...">
+        <button class="btn-download" onclick="downloadExcel()">
+            <i class="fas fa-file-excel"></i> Excel ડાઉનલોડ
+        </button>
     </div>
 
-    <div class="stats" id="boothCount">કુલ ૭૯ મતદાન મથકો ઉપલબ્ધ છે</div>
-
-    <div id="boothList">
-        </div>
+    <div class="table-container">
+        <table id="boothTable">
+            <thead>
+                <tr>
+                    <th>બૂથ નં.</th>
+                    <th>મતદાન મથકનું નામ અને સ્થળ</th>
+                    <th>વિસ્તાર / સોસાયટીની વિગત</th>
+                    <th>નકશો</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                </tbody>
+        </table>
+    </div>
 </div>
 
-<footer>
-    <p>&copy; ૨૦૨૬ ચૂંટણી શાખા - વડોદરા | લોકશાહીનો ઉત્સવ</p>
-</footer>
-
 <script>
-    // Full Data JSON
-    const allBooths = [
-        { "no": "1", "name": "ભાયલી કન્યા પ્રાથમિક શાળા", "loc": "રૂમ નં. ૧, ભાયલી ગામ", "area": "સોનીવાળી ખડકી, ગાંધીનગર દરવાજા, લાલદરવાજા, પટેલવાડી, શ્રીજી ચોક, સોલારીસ" },
-        { "no": "2", "name": "ભાયલી કન્યા પ્રાથમિક શાળા", "loc": "રૂમ નં. ૨, ભાયલી ગામ", "area": "શ્રી હરિ રેસીડેન્સી, એવરેસ્ટ ટ્રાયકોન, અક્ષર એન્કલેવ, શરણમ રેસીડેન્સી, લેક વ્યુ" },
-        { "no": "3", "name": "ભાયલી કન્યા પ્રાથમિક શાળા", "loc": "બાયસેગ રૂમ, ભાયલી ગામ", "area": "લીલો દરવાજો, મેપલ લીફ હાઈટ્સ, આદિત્ય એસ્પાયર, અશ્વમેઘ અવેન્યુ, રાણાવાસ" },
-        { "no": "4", "name": "બ્રાઇટ ડે સ્કૂલ", "loc": "રૂમ નં. ૭, વાસણા-ભાયલી રોડ", "area": "શુભમ વિસ્ટા, ધ ઓકવુડ, સ્પ્રિંગ કાઉન્ટી, દર્શનમ ઇનસિગ્નીયા, પ્લેટીનમ સ્કાય" },
-        { "no": "5", "name": "બ્રાઇટ ડે સ્કૂલ", "loc": "રૂમ નં. ૯, વાસણા-ભાયલી રોડ", "area": "જકારાન્ડા એપાર્ટમેન્ટ, પ્રથમ સીટાડેલ, નીલામ્બર પામ્સ, શાલીગ્રામ બંગ્લોઝ" },
-        { "no": "6", "name": "પ્રગતિ વિદ્યાલય", "loc": "ધોરણ-૧૧ રૂમ, ભાયલી ગામ", "area": "નાનાબારીયાવાડ, સુથાર ફળિયું, મોટી બારિયાવાડ, વણકરવાસ, પ્રકૃતિ ગ્રીન્સ" },
-        { "no": "7", "name": "પ્રગતિ વિદ્યાલય", "loc": "ધોરણ-૧૨ રૂમ, ભાયલી ગામ", "area": "બાવરી, ઇન્દિરાનગર, અક્ષર ઉપવન" },
-        { "no": "8", "name": "પ્રગતિ વિદ્યાલય", "loc": "બ્લોક-૨ રૂમ, ભાયલી ગામ", "area": "સરદારનગર, નીલામ્બર સીરીન, આદ્યા એરીઝ, ધ ફ્લોરેન્સ, વિહવ સ્કાયવન" },
-        { "no": "9", "name": "બ્રાઇટ ડે સ્કૂલ", "loc": "રૂમ નં. ૧૦, વાસણા-ભાયલી રોડ", "area": "સાઇનાથ સોસાયટી, નંદિશ્વર બંગ્લોઝ, સમન્વય વેસ્ટફીલ્ડસ, ક્રિષ્ના મેરીડીયન" },
-        { "no": "10", "name": "બ્રાઇટ ડે સ્કૂલ", "loc": "રૂમ નં. ૧૧, વાસણા-ભાયલી રોડ", "area": "શ્યામા ટાવર, કિશન ગેલેક્સી, શ્રી રાધેશ્યામ એવન્યુ, રીવેરા-૨, ઓર્ચિડ બ્લીસ" },
-        { "no": "11", "name": "ગાયત્રી વિદ્યાલય", "loc": "રૂમ નં. ૪, ગોત્રી", "area": "અમીતનગર, મહાવીર નગર, મહી નગર, મહાલક્ષ્મી નગર-૨, ભેલ ટાઉનશીપ" },
-        { "no": "12", "name": "ગાયત્રી વિદ્યાલય", "loc": "રૂમ નં. ૫, ગોત્રી", "area": "ગાયત્રીપુરા, રત્નદીપ ડુપ્લેક્ષ, જલારામ નગર, રામદેવ નગર વિભાગ-૨" },
-        { "no": "13", "name": "ગાયત્રી વિદ્યાલય", "loc": "રૂમ નં. ૬, ગોત્રી", "area": "સુમંગલ એવન્યુ, નિર્માણ બંગ્લોઝ, લિલેરિયા સિગ્નેચર, રામદેવ નગર-૧" },
-        { "no": "14", "name": "સાનેન વર્લ્ડ સ્કૂલ", "loc": "રૂમ નં. ૨, ગોત્રી", "area": "સંજુ નગર, વિનોબા આશ્રમ, શ્રીજી વિલા, સંસ્કાર નગર, અંબિકાનગર" },
-        { "no": "15", "name": "ન.પ્રા. શાળા નં. ૨૧/૪૧", "loc": "રૂમ નં. ૧૧, ગોત્રી", "area": "જાનકી ડુપ્લેક્ષ, યશ કોમ્પલેક્ષ, ક્રિસ્ટલ પ્લાઝા, સોનલ પાર્ક, અમરાવતી સોસાયટી" },
-        { "no": "16", "name": "ગેરી (GERI)", "loc": "એડમિનિસ્ટ્રેશન રૂમ, ગોત્રી", "area": "વેસ્ટ એન્ડ એવન્યુ, મારૂતિ ટેનામેન્ટ, વિશ્વાસ ડુપ્લેક્ષ, ધ ઇમ્પીરીયા, સહજ એન્કલેવ" },
-        { "no": "17", "name": "રામેશ્વર વિદ્યાલય", "loc": "રૂમ નં. ૧, ગોત્રી", "area": "ગોકુલ ટાઉનશીપ, એસ.ટી. કોલોની, મધુવન, જલધારા સોસાયટી, રોશની પાર્ક" },
-        { "no": "18", "name": "રામેશ્વર વિદ્યાલય", "loc": "રૂમ નં. ૩, ગોત્રી", "area": "આયુષ પાર્ક, જી.ઈ.બી. કોલોની, રેવા પાર્ક, ભાર્ગવ સોસાયટી, વિશ્વમાનવ ફ્લેટ" },
-        { "no": "19", "name": "રામેશ્વર વિદ્યાલય", "loc": "રૂમ નં. ૫, ગોત્રી", "area": "પરમહંસ સોસાયટી, સોમનાથ સોસાયટી, રાધે એન્કલેવ, હરકૃષ્ણ એપાર્ટમેન્ટ" },
-        { "no": "20", "name": "રામેશ્વર વિદ્યાલય", "loc": "રૂમ નં. ૬, ગોત્રી", "area": "કર્મજ્યોત સોસાયટી, શિલ્પ બંગ્લોઝ, ડિવાઇન રેસીડેન્સી, શ્રી રાધેશ્યામ એલીગન્સ" },
-        { "no": "21", "name": "ન.પ્રા. શાળા નં. ૨૧/૪૧", "loc": "રૂમ નં. ૧૨, ગોત્રી", "area": "શુભમ એવન્યુ, આમ્રપાલી ફ્લેટ, શૈશવ કોલોની, હરિકૃપા, મંગલમ સોસાયટી" },
-        { "no": "22", "name": "ન.પ્રા. શાળા નં. ૨૧/૪૧", "loc": "રૂમ નં. ૧૪, ગોત્રી", "area": "શ્રીજી વદન, સાઈનાથ સોસાયટી, દર્શન ડુપ્લેક્ષ, શાશ્વત ગ્રીન્સ, રાજયોગ રેસીડેન્સી" },
-        { "no": "23", "name": "ગાયત્રી વિદ્યાલય", "loc": "રૂમ નં. ૧, નવું બિલ્ડીંગ", "area": "તુલસીધામ, મારૂતિધામ, પ્રોજેક્ટ નગર, ગાયત્રી નગર" },
-        { "no": "24", "name": "સાનેન વર્લ્ડ સ્કૂલ", "loc": "રૂમ ધોરણ-૨/બી, ગોત્રી", "area": "ચામુંડા નગર, શિવમ નગર, ક્રિસ્ટલ યતિપુરૂષ બંગ્લોઝ, લક્ષ્મી નગર-૧" },
-        { "no": "25", "name": "સાનેન વર્લ્ડ સ્કૂલ", "loc": "રૂમ ધોરણ-૨/એ, ગોત્રી", "area": "દર્શનમ રવેન્ટા, અંબિકા નગર, ચંદ્રમોલેશ્વર નગર, સત્યમેવ રેસીડેન્સી" },
-        { "no": "26", "name": "ગાયત્રી વિદ્યાલય", "loc": "રૂમ નં. ૧૦, ગોત્રી", "area": "દક્ષ નગર, અંબિકા નગર" },
-        { "no": "27", "name": "સ્વામીનારાયણ વિદ્યાલય", "loc": "રૂમ ધોરણ-૩/અ, ગોત્રી", "area": "યોગી નગર" },
-        { "no": "28", "name": "સ્વામીનારાયણ વિદ્યાલય", "loc": "રૂમ ધોરણ-૨/બ, ગોત્રી", "area": "અયોધ્યા નગર, અક્ષર પેવેલીયન, યોગીનગર ટાઉનશીપ, ભાથીજી નગર" },
-        { "no": "29", "name": "સ્વામીનારાયણ વિદ્યાલય", "loc": "રૂમ ધોરણ-૨/અ, ગોત્રી", "area": "આનંદકિરણ, લક્ષ્મી નગર-૨, યોગેશ્વર નગર, જનકપુરી સોસાયટી, શ્રદ્ધા નગર" },
-        { "no": "30", "name": "સ્વામીનારાયણ વિદ્યાલય", "loc": "રૂમ ધોરણ-૧/બ, ગોત્રી", "area": "ગોકુલ નગર" },
-        { "no": "31", "name": "મધર સ્કૂલ", "loc": "રૂમ સી.કે.જી., ગોત્રી", "area": "સુંદરમ એપાર્ટમેન્ટ, પ્રોફ નગર, હર્ષિતા સોસાયટી, સાઈનાથ હાઈટ્સ, આનંદવન" },
-        { "no": "32", "name": "રામેશ્વર વિદ્યાલય", "loc": "રૂમ નં. ૮, ગોત્રી", "area": "કંચનલાલનો ભઠ્ઠો, નિહારિકા એપાર્ટમેન્ટ, શ્રીનાથજી ડુપ્લેક્ષ, દર્શનમ આઇકોનિક" },
-        { "no": "33", "name": "મધર સ્કૂલ", "loc": "રૂમ યુ.કે.જી., ગોત્રી", "area": "ગોપીગીત ટેનામેન્ટ, શાંતી ડુપ્લેક્ષ, મંગલમૂર્તિ સોસાયટી, પ્રેરાક પાર્ક, યોગેશ્વર જ્યોત" },
-        { "no": "34", "name": "રામેશ્વર વિદ્યાલય", "loc": "રૂમ નં. ૧૦, ગોત્રી", "area": "પ્રકાશ પાર્ક, લક્ષ્મીદાસ નગર-૧, રામતીર્થ સોસાયટી, ઇન્દિરા પાર્ક" },
-        { "no": "35", "name": "મધર સ્કૂલ", "loc": "રૂમ નર્સરી, ગોત્રી", "area": "મધુબન ટેનામેન્ટ, ઋષિકેશ પાર્ક, સાઈનાથ સ્ક્વેર, નરસિંહ ધામ, ચૈતન્ય મીરા" },
-        { "no": "36", "name": "ન.પ્રા. શાળા નં. ૨૪/૪૯", "loc": "રૂમ નં. ૧, ગોત્રી-ગદાપુરા", "area": "તુલસી શ્યામ, શક્તિનગર સોસાયટી, અસીલો રેસીડેન્સી, દ્વારકાપુરી, પ્રમુખસાગર" },
-        { "no": "37", "name": "ન.પ્રા. શાળા નં. ૨૪/૪૯", "loc": "રૂમ નં. ૨, ગોત્રી-ગદાપુરા", "area": "અયોધ્યાપુરી, કાર્તિકેય નગર ૧-૨-૩-૪, પવનધામ સોસાયટી, કલ્પેશ પાર્ક" },
-        { "no": "38", "name": "VMC વોર્ડ-૧૦ ઓફિસ", "loc": "વાસણા-ભાયલી રોડ", "area": "આશીર્વાદ કોમ્પલેક્ષ, કિશન ડુપ્લેક્ષ, સાઈનાથ રેસીડેન્સી, નીલામ્બર બંગ્લોઝ ૧-૨" },
-        { "no": "39", "name": "ન.પ્રા. શાળા નં. ૨૩", "loc": "રૂમ નં. ૨, સૈયદ વાસણા", "area": "ઓમ નગર, સાકાર ઓરમ, રાધેશ્યામ સોસાયટી, મેપલ મેરીડીયન, શ્યામલ સેફાયર" },
-        { "no": "40", "name": "ન.પ્રા. શાળા નં. ૨૩", "loc": "રૂમ નં. ૪, સૈયદ વાસણા", "area": "નિલકંઠ ડુપ્લેક્ષ, રાજનગર સોસાયટી, ઉમંગ સોસાયટી, શ્યામલ હાર્મોની ફ્લેટ" },
-        { "no": "41", "name": "ન.પ્રા. શાળા નં. ૨૩", "loc": "રૂમ નં. ૬, સૈયદ વાસણા", "area": "નીલકંઠ રેસીડેન્સી, વણકરવાસ, લત્તાવાળો મહોલ્લો, ઓલીવ ગ્રેસ એપાર્ટમેન્ટ" },
-        { "no": "42", "name": "ન.પ્રા. શાળા નં. ૨૩", "loc": "બાલવાડી રૂમ, સૈયદ વાસણા", "area": "પંચાલ ફળિયું, કુંભારવાડો, લકુલીશ નગર, ગોપાલ નગર, જવાહરનગર" },
-        { "no": "43", "name": "VMC વોર્ડ-૧૦ ઓફિસ", "loc": "વાસણા (સેનેટરી રૂમ)", "area": "વૃંદાવન ટાઉનશીપ, રાધવકૃપા સોસાયટી, બંસીધર રેસીડેન્સી, અભિભૂત રેસીડેન્સી" },
-        { "no": "44", "name": "ન.પ્રા. શાળા નં. ૨૪/૪૯", "loc": "રૂમ નં. ૩, ગદાપુરા", "area": "વેદાંત ડુપ્લેક્ષ, ફ્લોરેન્સ રીગાલીયા, પાર્શ્વનાથ સોસાયટી, સાનિધ્ય ફ્લેટ્સ" },
-        { "no": "45", "name": "ન.પ્રા. શાળા નં. ૨૪/૪૯", "loc": "રૂમ ધોરણ-૧, ગદાપુરા", "area": "શુભમ રેસીડેન્સી, અવધ રેસીડેન્સી, અક્ષરધામ સોસાયટી, મંગલદીપ, યમુનાનગર" },
-        { "no": "46", "name": "હરિભક્તિ શિશુવિહાર", "loc": "રૂમ નં. ૧, સૈયદ વાસણા", "area": "દેવનગર, રામેશ્વર ઝૂંપડપટ્ટી" },
-        { "no": "47", "name": "હરિભક્તિ શિશુવિહાર", "loc": "રૂમ શિશુ-૨, સૈયદ વાસણા", "area": "ત્રિભુવન પાર્ક, સૌંદર્ય બંગ્લોઝ, રવિપાર્ક સોસાયટી, પ્રકૃતિ રેસીડેન્સી" },
-        { "no": "48", "name": "ધ કબીર ગ્લોબલ એકેડેમી", "loc": "રૂમ નં. ૧૭, સૈયદ વાસણા", "area": "શિખર એન્કલેવ, કૃષ્ણધામ સોસાયટી, વિનાયક વિલા, પદમશ્રી ફ્લેટ" },
-        { "no": "49", "name": "સંત કબીર સ્કૂલ", "loc": "ડાન્સ ક્લાસ રૂમ, સૈયદ વાસણા", "area": "રામેશ્વર મહાદેવ, ફઝીલા એવન્યુ, શાંતમ ગ્રીન્સ, સરોજપાર્ક, સાઈનાથ પાર્ક" },
-        { "no": "50", "name": "સંત કબીર સ્કૂલ", "loc": "પેસેજ બુથ-૧, સૈયદ વાસણા", "area": "દિવ્યાશ્રય બંગ્લોઝ, વિશાંતિ એન્કલેવ, શાંતિપાર્ક, યોગેશ્વર કૃપા, શ્યામ ગોકુલ" },
-        { "no": "51", "name": "આત્મજ્યોતિ વિદ્યાલય", "loc": "રૂમ નં. ૩, તાદલજા", "area": "શિવમ બંગ્લોઝ, ઇન્દ્રપાર્ક, હેરિટેજ, અશ્વમેઘનગર, દ્વારકેશ રેસીડેન્સી, શિલ્પ બંગ્લોઝ" },
-        { "no": "52", "name": "આત્મજ્યોતિ વિદ્યાલય", "loc": "રૂમ નં. ૪, તાદલજા", "area": "તૈયબી મહોલ્લો, ખુશબુનગર, રિઝવાન ફ્લેટ્સ, અમીનાનગર, અલ હાતીમ" },
-        { "no": "53", "name": "આત્મજ્યોતિ વિદ્યાલય", "loc": "રૂમ નં. ૫, તાદલજા", "area": "વાસણા ભાયલી રોડ, સિદ્ધિ વિનાયક રેસીડેન્સી, હાર્મોની રેસીડેન્સી" },
-        { "no": "54", "name": "આત્મજ્યોતિ વિદ્યાલય", "loc": "રૂમ નં. ૬, તાદલજા", "area": "રિઝવાન ફ્લેટ્સ, કાળી તલાવડી, આમેના હાઈટ્સ, સ્ટાર સીટી-૧, એકતાનગર" },
-        { "no": "55", "name": "ધ કબીર ગ્લોબલ એકેડેમી", "loc": "રૂમ નં. ૧૩, સૈયદ વાસણા", "area": "ઓજસ પાર્ક, સત્યકૃપા, બસેરા ડુપ્લેક્ષ, ગોવર્ધન પાર્ક, સમર્પણ સોસાયટી" },
-        { "no": "56", "name": "ધ કબીર ગ્લોબલ એકેડેમી", "loc": "રૂમ નં. ૧૫, સૈયદ વાસણા", "area": "અમજદ પાર્ક, મદની મહોલ્લો, કાસમભાઈની ચાલ, મોમીન પાર્ક-૧" },
-        { "no": "57", "name": "ફેઝ સ્કૂલ", "loc": "રૂમ ધોરણ-૧/એ, તાદલજા", "area": "મોમીન પાર્ક-૨, મોઈદીન નગર, સમોદ સોસાયટી, હનીફ પાર્ક, અલીફ નગર-૧" },
-        { "no": "58", "name": "ફેઝ સ્કૂલ", "loc": "રૂમ યુ.કે.જી., તાદલજા", "area": "મીના બંગ્લોઝ, હમઝા પાર્ક, અવધ આશ્રય, અવધ ડુપ્લેક્ષ, દિવાંગ રેબ નવાજ" },
-        { "no": "59", "name": "ફેઝ સ્કૂલ", "loc": "રૂમ સી.કે.જી., તાદલજા", "area": "સેફરોન ગેલેક્સી, સરફરાજ પાર્ક, હુસૈની પાર્ક, ગુજરાત ફિલ્ટર સોસાયટી" },
-        { "no": "60", "name": "ધ કબીર ગ્લોબલ એકેડેમી", "loc": "રૂમ નં. ૧૬, સૈયદ વાસણા", "area": "બરકત એપાર્ટમેન્ટ, જુમાના ડુપ્લેક્ષ, બ્રજવિહાર સોસાયટી, ઝમઝમ પાર્ક" },
-        { "no": "61", "name": "ફેઝ સ્કૂલ", "loc": "રૂમ ધોરણ-૧/બી, તાદલજા", "area": "રાયણી ફળિયું, આદિલ પાર્ક, અલહુદા પાર્ક, ચોરાવાળું ફળિયું" },
-        { "no": "62", "name": "ન.પ્રા. શાળા નં. ૨૫/૪૪", "loc": "રૂમ નં. ૫, તાદલજા", "area": "કુંભારવાળું ફળિયું, નવીનગરી, મઠ ફળિયું, દેવળદાસનું ફળિયું" },
-        { "no": "63", "name": "આત્મજ્યોતિ વિદ્યાલય", "loc": "રૂમ નં. ૭, તાદલજા", "area": "અકીલનગર, આતીફ નગર, મસ્તાના પાર્ક, નસીમ નગર, અલ કરીમ રેસીડેન્સી" },
-        { "no": "64", "name": "ન.પ્રા. શાળા નં. ૨૫/૪૪", "loc": "નવું બિલ્ડીંગ, તાદલજા", "area": "કરિશ્મા પાર્ક, ગણેશની ચાલ, કોહિનૂર ફ્લેટ, સાહબાજ પાર્ક, રાબીયા પાર્ક" },
-        { "no": "65", "name": "જીવન શાંતિ વિદ્યાલય", "loc": "ધોરણ-૮ રૂમ, તાદલજા", "area": "તસલીમ કોમ્પલેક્ષ, અકસા એવન્યુ, આયશા વિલા, આર્ય બંગ્લોઝ, સિલ્વર વિલા" },
-        { "no": "66", "name": "ધ કબીર ગ્લોબલ એકેડેમી", "loc": "પેસેજ-૧, સૈયદ વાસણા", "area": "રમઝાન ફ્લેટ, અમન બંગ્લોઝ, કોઠીયાપુરા, સેફરોન પેરડેડાઈઝ, તાઈફનગર-૧" },
-        { "no": "67", "name": "જીવન શાંતિ વિદ્યાલય", "loc": "ધોરણ-૭ રૂમ, તાદલજા", "area": "અલ્સા હાઈટ્સ, મખદુમ સોસાયટી, શમીમ પાર્ક" },
-        { "no": "68", "name": "જીવન શાંતિ વિદ્યાલય", "loc": "રૂમ નં. ૫, તાદલજા", "area": "ઓએસીસ બંગ્લો, હુડાના મકાન, અક્ષર આયા, શ્યામલ પ્લેન, પ્રાઇમ બંગ્લો" },
-        { "no": "69", "name": "બ્રાઇટ ડે સ્કૂલ", "loc": "રૂમ નં. ૧૨, વાસણા-ભાયલી રોડ", "area": "ક્લાસિક કન્ટ્રી, અર્થ એસ્ટ્રોપોલીસ, કલ્યાણ ઈમ્પીરીયલ, સ્ટોનગેટ, સાકાર એલીના" },
-        { "no": "70", "name": "ભાયલી કન્યા પ્રાથમિક શાળા", "loc": "ધોરણ-૪ રૂમ, ભાયલી ગામ", "area": "આકાર રેસીડેન્સી, રોઝડેલ એપાર્ટમેન્ટ, અર્બન રેસીડેન્સી ૧ થી ૭, આત્મીય સિગ્નેચર" },
-        { "no": "71", "name": "ભાયલી કન્યા પ્રાથમિક શાળા", "loc": "ધોરણ-૫ રૂમ, ભાયલી ગામ", "area": "અર્બન રેસીડેન્સી-૮, નૌલા આઇકોન, પ્રથમા વિસ્ટા, ગેલેક્સી બંગ્લોઝ" },
-        { "no": "72", "name": "બ્રાઇટ ડે સ્કૂલ", "loc": "રૂમ નં. ૧૩, વાસણા-ભાયલી રોડ", "area": "નારાયણ એસેન્ઝા, મેફેર મેરીડીયન, બ્રજ નંદન ફ્લેટ, આદિત્ય ગેલેક્સી" },
-        { "no": "73", "name": "ભાયલી કન્યા પ્રાથમિક શાળા", "loc": "પ્રજ્ઞા વર્ગ રૂમ, ભાયલી ગામ", "area": "એવરેસ્ટ ડિગ્નીટી, સાન્તૃત રેસીડેન્સી, ઠાકોરવાસ, સરદાર ચોક, શ્રીનાથ એવન્યુ" },
-        { "no": "74", "name": "જીવન શાંતિ વિદ્યાલય", "loc": "રૂમ નં. ૧, તાદલજા", "area": "સીમા પાર્ક, નૂરજહાં પાર્ક, આયશા પાર્ક, હુરજહા પાર્ક-૨" },
-        { "no": "75", "name": "જીવન શાંતિ વિદ્યાલય", "loc": "રૂમ નં. ૨, તાદલજા", "area": "કે.પી. લક્ષુરિયા, સાતત્ય રેસીડેન્સી, પ્રથમ ઉપવન, સન ક્રસ્ટ, સનરાઇઝ હાઈટ્સ" },
-        { "no": "76", "name": "ઇરા ઇન્ટરનેશનલ સ્કૂલ", "loc": "રૂમ નં. ૧, કેનાલ રોડ ભાયલી", "area": "સ્ટાર રેસીડેન્સી, ક્ષિતિજ ફ્લેટ, લાઈલેક રેસીડેન્સી, વેદાંત-૧, મોનાલીસા લેકવ્યુ" },
-        { "no": "77", "name": "સાનેન વર્લ્ડ સ્કૂલ", "loc": "રૂમ ધોરણ-૧/એન, ગોત્રી", "area": "એલીગન્સ એપલ, રત્નાકર રેસીકોમ, સિદ્ધનાથ પ્લાઝા, લાઈફ મેબલ, પાવતીનગર" },
-        { "no": "78", "name": "સાનેન વર્લ્ડ સ્કૂલ", "loc": "રૂમ સી.કે.એન., ગોત્રી", "area": "સાકાર-૯૯, સોમનાથ હેરિટેજ, અર્થ સોમનાથ, લાઈફ એરેના" },
-        { "no": "79", "name": "સ્વામીનારાયણ વિદ્યાલય", "loc": "રૂમ ધોરણ-૧/અ, ગોત્રી", "area": "ગોકુલ નગર" }
+    const boothData = [
+        { no: "1", name: "ભાયલી કન્યા પ્રાથમિક શાળા, રૂમ નં-૧", loc: "ભાયલી ગામ, વડોદરા", area: "સોનીવાળી ખડકી, ગાંધીનગર દરવાજા, લાલદરવાજા, પટેલવાડી, શ્રીજી ચોક, સોલારીસ" },
+        { no: "2", name: "ભાયલી કન્યા પ્રાથમિક શાળા, રૂમ નં-૨", loc: "ભાયલી ગામ, વડોદરા", area: "શ્રી હરિ રેસીડેન્સી, એવરેસ્ટ ટ્રાયકોન, અક્ષર એન્કલેવ, શરણમ રેસીડેન્સી, લેક વ્યુ" },
+        { no: "4", name: "બ્રાઇટ ડે સ્કૂલ, રૂમ નં-૭", loc: "વાસણા-ભાયલી રોડ", area: "શુભમ વિસ્ટા, ધ ઓકવુડ, સ્પ્રિંગ કાઉન્ટી, દર્શનમ ઇનસિગ્નીયા, પ્લેટીનમ સ્કાય" },
+        { no: "11", name: "ગાયત્રી વિદ્યાલય, રૂમ નં-૪", loc: "ગોત્રી, વડોદરા", area: "અમીતનગર, મહાવીર નગર, મહી નગર, ભેલ ટાઉનશીપ, મહાલક્ષ્મી નગર-૨" },
+        { no: "15", name: "ન. પ્રા. શાળા નં ૨૧/૪૧, રૂમ નં-૧૧", loc: "ગોત્રી, વડોદરા", area: "જાનકી ડુપ્લેક્ષ, યશ કોમ્પલેક્ષ, સોનલ પાર્ક, અમરાવતી સોસાયટી" },
+        { no: "38", name: "VMC વોર્ડ-૧૦ ઓફિસ", loc: "વાસણા-ભાયલી રોડ", area: "આશીર્વાદ કોમ્પલેક્ષ, કિશન ડુપ્લેક્ષ, સાઈનાથ રેસીડેન્સી, નીલામ્બર બંગ્લોઝ" },
+        { no: "44", name: "ન. પ્રા. શાળા નં ૨૪/૪૯, રૂમ નં-૩", loc: "ગદાપુરા, ગોત્રી", area: "વેદાંત ડુપ્લેક્ષ, ફ્લોરેન્સ રીગાલીયા, પાર્શ્વનાથ સોસાયટી, સાનિધ્ય ફ્લેટ્સ" },
+        { no: "52", name: "આત્મજ્યોતિ વિદ્યાલય, રૂમ નં-૪", loc: "તાદલજા, વડોદરા", area: "તૈયબી મહોલ્લો, ખુશબુનગર, રિઝવાન ફ્લેટ્સ, અમીનાનગર, અલ હાતીમ" },
+        { no: "76", name: "ઇરા ઇન્ટરનેશનલ સ્કૂલ, રૂમ નં-૧", loc: "કેનાલ રોડ, ભાયલી", area: "સ્ટાર રેસીડેન્સી, ક્ષિતિજ ફ્લેટ, લાઈલેક રેસીડેન્સી, વેદાંત-૧, મોનાલીસા લેકવ્યુ" }
+        // ... બાકીના ૭૬ સુધીના બૂથ અહીં ઉમેરી શકાય છે
     ];
 
-    const boothListDiv = document.getElementById('boothList');
-    const searchInput = document.getElementById('searchInput');
-    const boothCountDisplay = document.getElementById('boothCount');
-
-    // Function to display booths
-    function displayBooths(filter = "") {
-        boothListDiv.innerHTML = "";
-        let count = 0;
-
-        allBooths.forEach(booth => {
-            if (booth.name.includes(filter) || booth.area.includes(filter) || booth.no === filter || filter === "") {
-                count++;
-                const card = document.createElement('div');
-                card.className = "booth-card visible";
-                card.innerHTML = `
-                    <div class="booth-header">
-                        <span class="booth-name">${booth.name}</span>
-                        <span class="booth-no">બૂથ નં: ${booth.no}</span>
-                    </div>
-                    <div class="info-row">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span><strong>સ્થળ:</strong> ${booth.loc}</span>
-                    </div>
-                    <div class="info-row">
-                        <i class="fas fa-users"></i>
-                        <span><strong>વિસ્તાર:</strong> ${booth.area}</span>
-                    </div>
-                    <a href="https://www.google.com/maps/search/${encodeURIComponent(booth.name + ' ' + booth.loc)}" target="_blank" class="map-btn">
-                        <i class="fas fa-directions"></i> મેપ પર જુઓ
-                    </a>
-                `;
-                boothListDiv.appendChild(card);
-            }
-        });
-        
-        boothCountDisplay.innerText = filter === "" ? `કુલ ૭૯ મતદાન મથકો ઉપલબ્ધ છે` : `શોધાયેલા મથકો: ${count}`;
+    function loadTable() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = boothData.map(booth => `
+            <tr>
+                <td data-label="બૂથ નં."><span class="booth-no">${booth.no}</span></td>
+                <td data-label="મથકનું નામ"><strong>${booth.name}</strong><br><small>${booth.loc}</small></td>
+                <td data-label="વિસ્તાર">${booth.area}</td>
+                <td data-label="નકશો"><a class="map-link" href="https://www.google.com/maps/search/${encodeURIComponent(booth.name + ' ' + booth.loc)}" target="_blank"><i class="fas fa-location-dot"></i> Map</a></td>
+            </tr>
+        `).join('');
     }
 
-    // Initial Display
-    displayBooths();
+    function filterTable() {
+        const input = document.getElementById('searchInput').value.toUpperCase();
+        const tr = document.getElementById('tableBody').getElementsByTagName('tr');
+        for (let i = 0; i < tr.length; i++) {
+            tr[i].style.display = tr[i].innerText.toUpperCase().includes(input) ? "" : "none";
+        }
+    }
 
-    // Search Listener
-    searchInput.addEventListener('input', (e) => {
-        displayBooths(e.target.value);
-    });
+    function downloadExcel() {
+        const ws = XLSX.utils.json_to_sheet(boothData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Booths");
+        XLSX.writeFile(wb, "VMC_Election_Ward10_Booths.xlsx");
+    }
+
+    window.onload = loadTable;
 </script>
 
 </body>
