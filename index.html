@@ -1,8 +1,266 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>VMC ચૂંટણી ૨૦૨૬ - વોર્ડ ૧૦ Dashboard</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+
+:root{
+--blue:#003366;
+--orange:#ff9933;
+--bg:#f4f7f9;
+}
+
+body{margin:0;font-family:Segoe UI;background:var(--bg);}
+
+header{
+background:var(--blue);
+color:#fff;
+text-align:center;
+padding:20px;
+border-bottom:5px solid var(--orange);
+}
+
+/* DASHBOARD CARDS */
+.stats{
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+margin:15px;
+}
+
+.card{
+flex:1;
+background:#fff;
+padding:15px;
+border-radius:10px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+.container{padding:15px;}
+
+/* ACTION BAR */
+.bar{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+background:#fff;
+padding:15px;
+border-radius:10px;
+}
+
+input{
+flex:1;
+padding:12px;
+border-radius:25px;
+border:2px solid #ddd;
+}
+
+button{
+border:none;
+padding:10px 15px;
+border-radius:25px;
+cursor:pointer;
+}
+
+.btn{background:#27ae60;color:#fff;}
+.print{background:#2980b9;color:#fff;}
+
+/* TABLE */
+.table-box{margin-top:10px;background:#fff;border-radius:10px;overflow:auto;}
+
+table{width:100%;border-collapse:collapse;}
+th{background:var(--blue);color:#fff;padding:10px;}
+td{padding:10px;border-bottom:1px solid #eee;word-break:break-word;}
+
+.booth{background:#eef2f7;padding:4px 8px;border-radius:5px;font-weight:bold;}
+
+.map-frame{
+width:100%;
+height:200px;
+border:none;
+margin-top:5px;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+table,thead,tbody,tr,td{display:block}
+th{display:none}
+tr{margin-bottom:10px;border:1px solid #ddd}
+td{padding-left:50%;position:relative}
+td::before{
+content:attr(data-label);
+position:absolute;
+left:10px;
+font-weight:bold;
+color:var(--blue);
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>VMC ચૂંટણી ૨૦૨૬</h2>
+<p>વોર્ડ ૧૦ Dashboard</p>
+</header>
+
+<!-- STATS -->
+<div class="stats">
+<div class="card">
+<h3 id="total">0</h3>
+<p>Total Booths</p>
+</div>
+
+<div class="card">
+<h3 id="filtered">0</h3>
+<p>Filtered</p>
+</div>
+</div>
+
+<div class="container">
+
+<div class="bar">
+<input id="search" placeholder="Search (ભાયલી / bhayli / booth no)" onkeyup="search()">
+<button class="btn" onclick="downloadExcel()">Excel</button>
+<button class="print" onclick="window.print()">Print</button>
+</div>
+
+<div class="table-box">
+<table>
+<thead>
+<tr>
+<th>Booth</th>
+<th>Details</th>
+<th>Area</th>
+<th>Map</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="data"></tbody>
+</table>
+</div>
+
+</div>
+
 <script>
-fetch("booths.json")
-.then(res => res.json())
-.then(data => {
-    boothData = data;
-    render(boothData);
-});
+
+/* 🔥 PASTE FULL DATA HERE */
+const boothData = [
+{
+id:1,
+name:"ભાયલી કન્યા પ્રાથમિક શાળા",
+loc:"રૂમ 1, ભાયલી ગામ",
+area:"સોનીવાળી ખડકી, ગાંધીનગર દરવાજા"
+},
+{
+id:2,
+name:"ભાયલી કન્યા પ્રાથમિક શાળા",
+loc:"રૂમ 2",
+area:"શ્રી હરિ રેસીડેન્સી"
+}
+];
+
+/* STATS */
+document.getElementById("total").innerText = boothData.length;
+
+/* RENDER */
+function render(data){
+
+document.getElementById("filtered").innerText = data.length;
+
+let html = data.map(b=>`
+<tr>
+
+<td data-label="Booth"><span class="booth">${b.id}</span></td>
+
+<td data-label="Details">
+<b>${b.name}</b><br>
+<small>${b.loc}</small>
+</td>
+
+<td data-label="Area">${b.area}</td>
+
+<td data-label="Map">
+<iframe class="map-frame"
+src="https://maps.google.com/maps?q=${encodeURIComponent(b.name+' '+b.loc)}&output=embed"></iframe>
+</td>
+
+<td data-label="Action">
+
+<button onclick="share(${b.id})">WA</button>
+<button onclick="printBooth(${b.id})">Print</button>
+
+</td>
+
+</tr>
+`).join("");
+
+document.getElementById("data").innerHTML = html;
+}
+
+render(boothData);
+
+/* SMART SEARCH */
+function search(){
+let q = document.getElementById("search").value.toLowerCase();
+
+let res = boothData.filter(b =>
+b.name.toLowerCase().includes(q) ||
+b.area.toLowerCase().includes(q) ||
+b.loc.toLowerCase().includes(q) ||
+b.id.toString()==q
+);
+
+render(res);
+}
+
+/* EXCEL */
+function downloadExcel(){
+let ws = XLSX.utils.json_to_sheet(boothData);
+let wb = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb, ws, "Booths");
+XLSX.writeFile(wb,"Ward10.xlsx");
+}
+
+/* WHATSAPP */
+function share(id){
+let b = boothData.find(x=>x.id==id);
+
+let msg = `Booth ${b.id}
+${b.name}
+${b.loc}
+${b.area}`;
+
+window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+}
+
+/* PRINT SINGLE */
+function printBooth(id){
+let b = boothData.find(x=>x.id==id);
+
+let w = window.open();
+
+w.document.write(`
+<h2>Booth ${b.id}</h2>
+<p>${b.name}</p>
+<p>${b.loc}</p>
+<p>${b.area}</p>
+`);
+
+w.print();
+}
+
 </script>
+
+</body>
+</html>
